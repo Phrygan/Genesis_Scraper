@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+ <head>
+  <title>
+   Students Login
+  </title>
+  <link href="https://students.livingston.org:443/livingston/images/ipad-icon.png" rel="apple-touch-icon"/>
+  <link href="https://students.livingston.org:443/livingston/styles/parents.css" rel="stylesheet" type="text/css"/>
+  <link href="https://students.livingston.org:443/livingston/images/newIcon2.ico" rel="shortcut icon" type="image/x-icon"/>
+  <meta content="IE=EDGE" http-equiv="X-UA-Compatible"/>
+  <script src="/livingston/public/jquery-3.6.0.min.js">
+  </script>
+  <script src="/livingston/public/jquery-ui-1.12.1.custom/jquery-ui.min.js">
+  </script>
+  <link href="/livingston/public/jquery-ui-1.12.1.custom/jquery-ui.min.css" rel="stylesheet"/>
+  <script type="text/javascript">
+   function initialize_form()
+          {
+             document.getElementById('j_username').focus();
+          }
+
+          function showCaptchaMessage()
+          {
+              console.log('here');
+              $("#invalidCaptcha").dialog();
+          }
+          function forgotMyPassword()
+          {
+              $("#resetEmail").dialog();
+
+              // var emailAddress = window.prompt('Please enter the email address that is registered to you.   An email will be sent to that address as soon as possible.', '');
+              // var newURL = 'forgotMyPassword?portal=Y&emailAddress=' + emailAddress;
+
+              // if (emailAddress.length>0)
+              // {
+              //     window.alert('Your password will be e-mailed to you shortly.  It may take up to 5 minutes for the e-mail to be sent');
+              //     location.href = newURL;
+              // }
+          }
+  </script>
+ </head>
+ <body class="parentsBody" onload="initialize_form();" style="background:url('https://students.livingston.org:443/livingston/logonImage?type=studentModuleLogon') no-repeat 50% 0; background-size: cover; background-position: center 30px">
+  <table class="logonHeader" style="width:100%; border:0;border-collapse:collapse; border-spacing: 0;">
+   <tr>
+    <td style="text-align: left">
+     <img alt="Genesis" src="/livingston/images/genesis-logo405x103.png" style="height:50px; margin-left:5px; margin-top: 2px; vertical-align: bottom"/>
+    </td>
+    <td style="text-align:right; font-size: .8em; padding-right: 15px">
+     <span style="font-weight: bold">
+      WEBSITE:
+     </span>
+     <a href="http://www.livingston.org" style="font-weight: bold; color: #E6E6E6" target="_blank">
+      www.livingston.org
+     </a>
+     |
+     <span style="font-weight: bold">
+      HELP DESK:
+     </span>
+     <span style="font-weight: bold; color: #E6E6E6">
+      (973) 535-8000 ext. 2941
+     </span>
+    </td>
+   </tr>
+  </table>
+  <br/>
+  <br/>
+  <br/>
+  <form action="j_security_check" id="logon" method="post" name="logon" novalidate="">
+   <input id="idTokenInput" name="idTokenString" type="hidden"/>
+   <div style="background-color: #195876; width: 575px; margin-left:20px;box-shadow: rgba(0,0,0,0.3) 1px 1px 3px 0; opacity:1;">
+    <div style="padding-left: 15px; padding-right: 15px;opacity:1.0;">
+     <p style="color: #FFFFFF; text-shadow: 1px 1px 1px rgba(0,0,0,0.3); font-weight: 800; font-size: 13pt; line-height: 14pt; margin:0; padding:0; padding-top:20px">
+      Livingston Public Schools
+     </p>
+     <h1 style="color: #FFFFFF; text-shadow: 1px 1px 1px rgba(0,0,0,0.3); font-weight:300; font-size: 40pt; margin:0; padding:0; padding-bottom: 15px">
+      Student Access
+     </h1>
+    </div>
+    <div style="background-color: rgb(51,171,222); min-height: 225px; padding-left: 15px; padding-right: 15px; padding-top: 15px">
+     <label for="j_username" style="color:rgb(0,0,0); font-size: 13pt; line-height:13pt;font-weight: bold;">
+      User Name:
+     </label>
+     <div onclick="document.getElementById('j_username').focus();" style="vertical-align: middle; padding:8px; background-color: #FFFFFF; width: 80%">
+      <img alt="username icon" src="/livingston/parents/images/buttons/username.png"/>
+      <input autocapitalize="off" id="j_username" maxlength="150" name="j_username" size="35" style="border: none; outline: none; font-size: 14pt; line-heigh: 14pt; font-weight: normal; color: rgb(0,27,48)" type="email">
+      </input>
+     </div>
+     <div style="height: 10px">
+     </div>
+     <label for="j_password" style="color:rgb(0,0,0); font-size: 13pt; line-height:13pt;font-weight: bold;">
+      Password:
+     </label>
+     <div onclick="document.getElementById('j_password').focus();" style="vertical-align: middle; padding:8px; background-color: #FFFFFF; width: 60%">
+      <img alt="password icon" src="/livingston/parents/images/buttons/password.png"/>
+      <input autocomplete="off" class="normal" id="j_password" maxlength="255" name="j_password" size="25" style="border: none; outline: none; font-size: 14pt; line-heigh: 14pt; font-weight: bold; color: rgb(0,27,48)" type="password"/>
+     </div>
+     <br/>
+     <input class="saveButton" style="color: #000000;background-color: #e0e0e0; font-weight: 500;" type="submit" value="Login">
+      <br/>
+      <div style="color: #33abde ">
+       .
+      </div>
+     </input>
+    </div>
+   </div>
+  </form>
+  <br>
+   <div class="notecard" style="margin-left: 20px; width: 50%; min-width: 527px; opacity:0.9;">
+    <p style="text-align:left">
+     <p>
+      <span style="font-size:16px">
+       <span style="color:#FF0000">
+        <strong>
+         If you lock your Student Access account, wait 20 minutes and try again.
+        </strong>
+       </span>
+      </span>
+     </p>
+     <p>
+      <span style="color:rgb(255, 0, 255); font-size:16px">
+       <strong>
+        Student schedules have been published. You and your parents sign all of the required forms and documents before you can see this information.
+       </strong>
+      </span>
+     </p>
+     <p>
+      <span style="color:rgb(255, 0, 255); font-size:16px">
+       <strong>
+        Do not access your parents account for
+        <u>
+         ANY
+        </u>
+        reason.
+       </strong>
+      </span>
+     </p>
+     <p>
+     </p>
+    </p>
+   </div>
+   <div id="invalidSSO" style="display: none">
+    <div style="font-weight: bold;text-align: center;font-weight: normal">
+     The following error has prevented you from logging in:
+     <br/>
+     <b>
+     </b>
+    </div>
+   </div>
+   <div id="google_translate_element" style="margin-left: 20px;">
+   </div>
+   <script type="text/javascript">
+    // function googleTranslateElementInit()
+                          // {
+                          //     // TODO: If any changes are made to includedLanguages, copy them to parentsFooter.jsp and openRegistration/header.jsp
+                          //     new google.translate.TranslateElement({
+                          //         pageLanguage: 'en',
+                          //         includedLanguages: 'ar,es,it,ja,pt,zh-CN,en,ru,ko,gu,tl,fa,vi,pl',
+                          //         layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                          //     }, 'google_translate_element');
+                          // }
+                         function googleTranslateElementInit() {
+                           new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+                         }
+   </script>
+   <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript">
+   </script>
+  </br>
+ </body>
+ <div id="invalidCaptcha" style="display: none">
+  <div style="font-weight: bold;text-align: center">
+   Invalid Captcha
+  </div>
+ </div>
+ <div id="resetEmail" style="display: none">
+  <div>
+   <p>
+    Please enter the email address that is registered to you along with the captcha.  An email will be sent to that address as soon as possible.
+   </p>
+   <form action="/livingston/forgotMyPassword">
+    <input id="portal" name="portal" type="hidden" value="Y"/>
+    <div>
+     <div>
+      Email:
+     </div>
+     <div>
+      <input id="emailAddress" name="emailAddress" type="text"/>
+     </div>
+    </div>
+    <br/>
+    <div>
+     <script>
+      function updateCaptcha(){       $('#captcha')[0].src='/livingston/captcha?' + (new Date().getMilliseconds())   }
+     </script>
+     <div>
+      <img alt="" id="captcha" src="/livingston/captcha"/>
+     </div>
+     <div>
+      <input id="captcha" name="captcha" type="text"/>
+      <img alt="Refresh Captcha" onclick="updateCaptcha()" src="/livingston/images/reload.png" style="cursor:pointer" title="Refresh Captcha"/>
+      <div>
+       Enter 5 Character captcha from above
+      </div>
+     </div>
+    </div>
+   </form>
+  </div>
+  <br/>
+  <button class="genesisButton" id="__submit1__" onclick="document.getElementById('__submit1__').style.display = 'none';document.getElementById('__submit1__div').style.display = 'inline';" style="white-space:nowrap;" type="submit" value="Reset Password">
+   Reset Password
+  </button>
+  <span class="fieldlabel" id="__submit1__div" style="display:none">
+   One moment...
+  </span>
+ </div>
+</html>
