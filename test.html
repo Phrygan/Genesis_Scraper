@@ -1,215 +1,1119 @@
 <!DOCTYPE html>
-<html lang="en" style="height: 100%">
+<html>
  <head>
-  <title>
-   Students Login
-  </title>
-  <link href="https://students.livingston.org:443/livingston/images/ipad-icon.png" rel="apple-touch-icon"/>
-  <link href="https://students.livingston.org:443/livingston/styles/parents.css" rel="stylesheet" type="text/css"/>
-  <link href="https://students.livingston.org:443/livingston/images/newIcon2.ico" rel="shortcut icon" type="image/x-icon"/>
-  <meta content="IE=EDGE" http-equiv="X-UA-Compatible"/>
+  <link href="/livingston/images/ipad-icon.png" rel="apple-touch-icon"/>
+  <link href="/livingston/images/newIcon2.ico" rel="shortcut icon" type="image/x-icon"/>
+  <link href="/livingston/styles/parents.css?rnd=1" rel="stylesheet" type="text/css"/>
   <script src="/livingston/public/jquery-3.6.0.min.js">
   </script>
   <script src="/livingston/public/jquery-ui-1.12.1.custom/jquery-ui.min.js">
   </script>
   <link href="/livingston/public/jquery-ui-1.12.1.custom/jquery-ui.min.css" rel="stylesheet"/>
+  <title>
+   Parents at Livingston Public Schools
+  </title>
   <script type="text/javascript">
-   function initialize_form()
-          {
-             document.getElementById('j_username').focus();
-          }
-
-          function showCaptchaMessage()
-          {
-              console.log('here');
-              $("#invalidCaptcha").dialog();
-          }
-          function forgotMyPassword()
-          {
-              $("#resetEmail").dialog();
-
-              // var emailAddress = window.prompt('Please enter the email address that is registered to you.   An email will be sent to that address as soon as possible.', '');
-              // var newURL = 'forgotMyPassword?portal=Y&emailAddress=' + emailAddress;
-
-              // if (emailAddress.length>0)
-              // {
-              //     window.alert('Your password will be e-mailed to you shortly.  It may take up to 5 minutes for the e-mail to be sent');
-              //     location.href = newURL;
-              // }
-          }
+   var newAction = '';
+        function changeDate(date)
+        {
+            document.getElementById('fldDate').className='fieldvaluechanged';
+            location.href = '/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=weeklysummary&studentid=247434&mpToView=MP1&action=form&date=' + date;
+        }
+
+        function showAssignmentsByDate(date)
+        {
+            newAction='/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=247434&action=form&dateRange=dayof&date=' + date + "&courseAndSection=all";
+            document.frmDate.action = newAction;
+            document.frmDate.submit();
+        }
+
+        function showAssignmentsByMPAndCourse(date,courseAndSection)
+        {
+            var dateRange = 'MP1';
+            
+            newAction='/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=247434&action=form&dateRange=' + dateRange +
+                '&date=' + date + '&courseAndSection=' + courseAndSection;
+            document.frmDate.action = newAction;
+            document.frmDate.submit();
+        }
+
+        function searchRecentlyUpdated()
+        {
+            var date = document.getElementById('fldDate').value;
+            var dateRange = 'MP1';
+            var courseAndSection = '';
+            var status = 'UPDATED';
+
+            newAction='/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=247434&action=form&date=' + date +
+                '&dateRange=' + dateRange + '&courseAndSection=' + courseAndSection + '&status=' + status;
+            document.frmDate.action = newAction;
+
+            document.frmDate.submit();
+        }
+
+        function switchMarkingPeriod(mp)
+        {
+            location.href = '/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=weeklysummary&studentid=247434&action=form&mpToView=' + mp;
+        }
+
+        function goToCourseSummary(courseCode, courseSection)
+        {
+            if ('MP1' != 'FG')
+                location.href = '/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=coursesummary&studentid=247434&action=form&courseCode=' + courseCode + '&courseSection=' + courseSection + '&mp=MP1';
+        }
   </script>
  </head>
- <body class="parentsBody" onload="initialize_form();" style="background:url('https://students.livingston.org:443/livingston/logonImage?type=studentModuleLogon') no-repeat 50% 0; background-size: cover; background-position: center 30px">
-  <table class="logonHeader" style="width:100%; border:0;border-collapse:collapse; border-spacing: 0;">
-   <tr>
-    <td style="text-align: left">
-     <img alt="Genesis" src="/livingston/images/genesis-logo405x103.png" style="height:50px; margin-left:5px; margin-top: 2px; vertical-align: bottom"/>
+ <body class="parentsBody">
+  <!-- Needed to determine access to certain tabs (conferences, letters) -->
+  <script type="text/javascript">
+   function changeStudent(newstudentid)
+    {
+        location.href = document.URL.replace('247434',newstudentid);
+    }
+
+    function header_goToTab(newTab1, appendParams)
+    {
+        if (appendParams == '')
+            location.href='/livingston/parents?tab1=' + newTab1 + '&action=form';
+        else
+            location.href='/livingston/parents?tab1=' + newTab1 + '&action=form' + '&' + appendParams;
+    }
+
+    function confirmDialog(questionToAsk, okFunction, cancelFunction)
+    {
+        $( "#_dialog-confirm_" ).dialog({
+            resizable: false, height:'auto', width:600, modal: true,
+            title: 'Confirmation',
+            open: function()
+            {
+                $('#_confirmDialogText_').html(questionToAsk);
+            },
+            buttons:
+                {
+                    Ok: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (okFunction!=null)
+                            okFunction();
+                    },
+                    Cancel: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (cancelFunction!=null)
+                            cancelFunction();
+                    }
+                }
+        });
+    }
+
+    function alertDialog(alertText, okCallback)
+    {
+        $( "#_dialog-alert_" ).dialog({
+            resizable: false, height:'auto', width:600, modal: true,
+            title: 'Information',
+            open: function()
+            {
+                $('#_confirmAlertText_').html(alertText);
+            },
+            buttons:
+                {
+                    Ok: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (okCallback)
+                            okCallback();
+                    }
+                }
+        });
+    }
+
+    function promptDialog(questionToAsk, defaultAnswer, okFunction, cancelFunction)
+    {
+        if (defaultAnswer==null) defaultAnswer = '';
+        $( "#_dialog-prompt_" ).dialog({
+            resizable: false, height:'auto', width:600, modal: true,
+            title: 'Prompt',
+            open: function()
+            {
+                $('#_confirmPromptText_').html(questionToAsk);
+                $('#_prompt_dialog_value_').val(defaultAnswer).removeClass('fieldValueChanged').addClass('fieldValue').focus().select();
+            },
+            buttons:
+                {
+                    Ok: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (okFunction!=null)
+                        {
+                            var __prompt__answer = $('#_prompt_dialog_value_').val();
+                            if (__prompt__answer == null) __prompt__answer = '';
+                            $('#_prompt_dialog_value_').removeClass('fieldValueChanged').addClass('fieldValue');
+                            okFunction(__prompt__answer);
+                        }
+                    },
+                    Cancel: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (cancelFunction!=null)
+                            cancelFunction();
+                    }
+                }
+        });
+    }
+
+    function confirmDialogWarning(questionToAsk, okFunction, cancelFunction)
+    {
+        confirmDialogDisplay(questionToAsk, okFunction, cancelFunction, true);
+    }
+
+    function confirmDialogDisplay(questionToAsk, okFunction, cancelFunction, useWarningIcon)
+    {
+        $( "#_dialog-confirm_" ).dialog({
+            resizable: false, height:'auto', width:600, modal: true,
+            title: 'Confirmation',
+            open: function()
+            {
+                $('#_confirmDialogText_').html(questionToAsk);
+                if (useWarningIcon)
+                {
+                    $('#_confirmDialogIcon_').attr("src","/livingston/images/warning.gif");
+                }
+            },
+            buttons:
+                {
+                    Ok: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (okFunction!=null)
+                            okFunction();
+                    },
+                    Cancel: function()
+                    {
+                        $( this ).dialog( "close" );
+                        if (cancelFunction!=null)
+                            cancelFunction();
+                    }
+                }
+        });
+    }
+
+    function toggleDisclaimer()
+    {
+        location.href = document.URL + '&toggleDisclaimer=true';
+    }
+
+    function toggleGBDisclaimer()
+    {
+        location.href = document.URL + '&toggleGBDisclaimer=true';
+    }
+
+    function logout()
+    {
+        
+        try
+        {
+            
+                location.href='parents?logout=true'
+        }
+        catch (e)
+        {
+            location.href='parents?logout=true'
+        }
+
+    }
+
+    function displayPasswordInReadOnlyTextField(fieldID)
+    {
+        var displayField = document.getElementById('readonly' + fieldID);
+        var hiddenField = document.getElementById(fieldID);
+        if (displayField != null && hiddenField != null)
+        {
+            var displayFieldValue = displayField.innerHTML;
+            if (displayFieldValue.startsWith('****'))
+                displayFieldValue = hiddenField.value;
+            else
+                displayFieldValue = '********';
+        }
+        displayField.innerHTML = displayFieldValue;
+    }
+  </script>
+  <!-- Start of Header-->
+  <div class="headerModules">
+   <div style="text-align: left; float:left; white-space: nowrap; ">
+    <span style="font-size:18pt; font-weight: 600; text-transform: none; text-wrap: none; margin-left:28px;margin-top: 2px; ">
+     <img align="left" alt="Genesis" src="/livingston/images/genesis-logo405x103.png" style="height:40px; margin-left:5px; vertical-align: bottom;margin-top: 4px;margin-right: 7px;"/>
+     <br/>
+     Student Resources
+    </span>
+   </div>
+   <div style="text-align: right; white-space: nowrap">
+    <td>
+     <span class="headerModuleTab" onclick="header_goToTab('messagecenter','studentid=247434');" style="position:relative">
+      <img alt="" src="/livingston/parents/images/buttons/house_blue.png" style="vertical-align: bottom">
+       Message Center
+       <div style="width:13px;height:13px;background-color:red;border-radius:10px;position:absolute;top:2px;right:2px;padding:1px 2px 2px 1.5px;font-size:10px;text-align:center" title="10">
+        <div style="color:white">
+         10
+        </div>
+       </div>
+      </img>
+     </span>
+     <span class="headerModuleTabSelected" onclick="header_goToTab('studentdata','studentid=247434');">
+      <img alt="" src="/livingston/parents/images/buttons/students_white.png" style="vertical-align: bottom"/>
+      Student Data
+     </span>
+     <span class="headerModuleTab" onclick="header_goToTab('setup','studentid=247434');">
+      <img alt="" src="/livingston/parents/images/buttons/settings_blue.png" style="vertical-align: bottom"/>
+      Settings
+     </span>
     </td>
-    <td style="text-align:right; font-size: .8em; padding-right: 15px">
-     <span style="font-weight: bold">
-      WEBSITE:
-     </span>
-     <a href="http://www.livingston.org" style="font-weight: bold; color: #E6E6E6" target="_blank">
-      www.livingston.org
-     </a>
-     |
-     <span style="font-weight: bold">
-      HELP DESK:
-     </span>
-     <span style="font-weight: bold; color: #E6E6E6">
-      (973) 535-8000 ext. 2941
-     </span>
+    <span class="headerModuleTab" onclick="logout();">
+     <img alt="" src="/livingston/parents/images/buttons/lock_blue.png" style="vertical-align: bottom"/>
+     Logout
+    </span>
+   </div>
+  </div>
+  <div class="headerCategories">
+   <div class="headerCategories" style="height:15px;">
+   </div>
+   <span class="headerCategoryTab" onclick="header_goToTab('studentdata&amp;tab2=studentsummary','studentid=247434');">
+    Summary
+   </span>
+   <span class="headerCategoryTab" onclick="header_goToTab('studentdata&amp;tab2=assessments','studentid=247434');">
+    Assessments
+   </span>
+   <span class="headerCategoryTab" onclick="header_goToTab('studentdata&amp;tab2=attendance','studentid=247434');">
+    Attendance
+   </span>
+   <span class="headerCategoryTab" onclick="header_goToTab('studentdata&amp;tab2=grading','studentid=247434');">
+    Grading
+   </span>
+   <span class="headerCategoryTab" onclick="header_goToTab('studentdata&amp;tab2=feesAndFines','studentid=247434');">
+    Fees And Fines
+   </span>
+   <span class="headerCategoryTabSelected" onclick="header_goToTab('studentdata&amp;tab2=gradebook','studentid=247434');">
+    Gradebook
+   </span>
+   <span class="headerCategoryTab" onclick="header_goToTab('studentdata&amp;tab2=documents','studentid=247434');">
+    Documents
+   </span>
+   <span class="headerCategoryTab" onclick="header_goToTab('studentdata&amp;tab2=letters','studentid=247434');">
+    Letters
+   </span>
+   <span class="headerCategoryTab" onclick="header_goToTab('studentdata&amp;tab2=school','studentid=247434');">
+    School Information
+   </span>
+  </div>
+  <div class="headerStudentSelector">
+   <div class="headerStudentSelector" style="height:11px;">
+   </div>
+   <table cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+     <td style="font-size: 2.4em;font-weight: 300; margin-top: 8px;" width="50%">
+     </td>
+     <td width="50%">
+      <label for="fldStudent" style="text-transform: uppercase;">
+       Select Student:
+      </label>
+      <select class="headerStudentSelectorInput" id="fldStudent" name="fldStudent" onchange="changeStudent(this.value);">
+       <option selected="" value="247434">
+        Hong, Andrew
+       </option>
+      </select>
+     </td>
+    </tr>
+   </table>
+  </div>
+  <br/>
+  <div class="studentTabBar">
+   <span class="studentTabSelected" onclick="header_goToTab('studentdata&amp;tab2=gradebook&amp;tab3=weeklysummary','studentid=247434');">
+    Weekly Summary
+   </span>
+   <span class="studentTab" onclick="header_goToTab('studentdata&amp;tab2=gradebook&amp;tab3=listassignments','studentid=247434');">
+    List Assignments
+   </span>
+   <span class="studentTab" onclick="header_goToTab('studentdata&amp;tab2=gradebook&amp;tab3=coursesummary','studentid=247434');">
+    Course Summary
+   </span>
+  </div>
+  <div style="height: 10px;">
+  </div>
+  <script>
+   function _toggleFormCheckBox(id, flipChecked)
+    {
+        var checkbox = document.getElementById(id);
+        var image = document.getElementById(id + "Img");
+        var parent = checkbox.parentElement;
+
+
+        if(checkbox)
+        {
+            checkbox.checked = !checkbox.checked;
+            image.className = checkbox.checked ? '' : 'hideImage';
+            parent.className = checkbox.checked ? 'formCheckbox checked' : 'formCheckbox';
+        }
+
+        checkbox.onchange();
+    }
+  </script>
+  <table aria-label=" + m_title + " class="notecard" role="main" style="">
+   <tr>
+    <td class="notecardTitle">
+    </td>
+    <td class="notecardTitle" style="width:35px;text-align:right">
+    </td>
+   </tr>
+   <tr>
+    <td colspan="2">
+     <p class="sectionTitle">
+      Hong, Andrew
+     </p>
+     <form action="" method="post" name="frmDate" target="_top">
+      <p style="text-align: center">
+       <span onclick="changeDate('10/31/2022');" style="cursor: pointer;">
+        &lt;&lt;
+       </span>
+       <select class="fieldvalue" id="fldDate" name="fldDate" onchange="changeDate(this.value);">
+        <option value="08/29/2022">
+         Week of 08/29/2022
+        </option>
+        <option value="09/05/2022">
+         Week of 09/05/2022
+        </option>
+        <option value="09/12/2022">
+         Week of 09/12/2022
+        </option>
+        <option value="09/19/2022">
+         Week of 09/19/2022
+        </option>
+        <option value="09/26/2022">
+         Week of 09/26/2022
+        </option>
+        <option value="10/03/2022">
+         Week of 10/03/2022
+        </option>
+        <option value="10/10/2022">
+         Week of 10/10/2022
+        </option>
+        <option value="10/17/2022">
+         Week of 10/17/2022
+        </option>
+        <option value="10/24/2022">
+         Week of 10/24/2022
+        </option>
+        <option value="10/31/2022">
+         Week of 10/31/2022
+        </option>
+        <option selected="" value="11/07/2022">
+         Week of 11/07/2022 (Current)
+        </option>
+        <option value="11/14/2022">
+         Week of 11/14/2022
+        </option>
+        <option value="11/21/2022">
+         Week of 11/21/2022
+        </option>
+        <option value="11/28/2022">
+         Week of 11/28/2022
+        </option>
+        <option value="12/05/2022">
+         Week of 12/05/2022
+        </option>
+        <option value="12/12/2022">
+         Week of 12/12/2022
+        </option>
+        <option value="12/19/2022">
+         Week of 12/19/2022
+        </option>
+        <option value="12/26/2022">
+         Week of 12/26/2022
+        </option>
+        <option value="01/02/2023">
+         Week of 01/02/2023
+        </option>
+        <option value="01/09/2023">
+         Week of 01/09/2023
+        </option>
+        <option value="01/16/2023">
+         Week of 01/16/2023
+        </option>
+        <option value="01/23/2023">
+         Week of 01/23/2023
+        </option>
+        <option value="01/30/2023">
+         Week of 01/30/2023
+        </option>
+        <option value="02/06/2023">
+         Week of 02/06/2023
+        </option>
+        <option value="02/13/2023">
+         Week of 02/13/2023
+        </option>
+        <option value="02/20/2023">
+         Week of 02/20/2023
+        </option>
+        <option value="02/27/2023">
+         Week of 02/27/2023
+        </option>
+        <option value="03/06/2023">
+         Week of 03/06/2023
+        </option>
+        <option value="03/13/2023">
+         Week of 03/13/2023
+        </option>
+        <option value="03/20/2023">
+         Week of 03/20/2023
+        </option>
+        <option value="03/27/2023">
+         Week of 03/27/2023
+        </option>
+        <option value="04/03/2023">
+         Week of 04/03/2023
+        </option>
+        <option value="04/10/2023">
+         Week of 04/10/2023
+        </option>
+        <option value="04/17/2023">
+         Week of 04/17/2023
+        </option>
+        <option value="04/24/2023">
+         Week of 04/24/2023
+        </option>
+        <option value="05/01/2023">
+         Week of 05/01/2023
+        </option>
+        <option value="05/08/2023">
+         Week of 05/08/2023
+        </option>
+        <option value="05/15/2023">
+         Week of 05/15/2023
+        </option>
+        <option value="05/22/2023">
+         Week of 05/22/2023
+        </option>
+        <option value="05/29/2023">
+         Week of 05/29/2023
+        </option>
+        <option value="06/05/2023">
+         Week of 06/05/2023
+        </option>
+        <option value="06/12/2023">
+         Week of 06/12/2023
+        </option>
+       </select>
+       <span onclick="changeDate('11/14/2022');" style="cursor: pointer;">
+        &gt;&gt;
+       </span>
+      </p>
+     </form>
+     <p style="text-align: center">
+      <span onclick="searchRecentlyUpdated();" style="cursor:pointer;color:#0000dd" title="Click to view updated grades">
+       <img align="absmiddle" alt="" src="/livingston/parents/images/buttons/info.png" title="Click to view updated grades"/>
+       <u>
+        Andrew has new grades!
+       </u>
+      </span>
+     </p>
+     <p style="text-align: center;">
+      <img src="/livingston/parents/images/buttons/blueAdobe.png" style="width:24px;"/>
+      <a href="/livingston/parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=weeklysummary&amp;studentid=247434&amp;action=print&amp;dateRange=weekof&amp;date=11/07/2022&amp;mpToView=MP1" target="_blank">
+       Printable Version of Weekly Assignment List
+      </a>
+     </p>
+     <table border="0" class="list">
+      <tr class="listheading">
+       <td class="cellLeft" nowrap="">
+        Courses
+       </td>
+       <td class="cellLeft" nowrap="">
+        Teacher
+       </td>
+       <td class="cellCenter">
+        <select class="fieldvalue" name="fldMarkingPeriod" onchange="switchMarkingPeriod(this.value);">
+         <option selected="" value="MP1">
+          MP1
+         </option>
+        </select>
+        Avg
+       </td>
+       <td class="cellCenter" onclick="showAssignmentsByDate('11/7/2022');" style="cursor:pointer" title="View Assignments Due on 11/7/2022">
+        <span style="text-decoration: underline">
+         Mon
+        </span>
+        <br>
+         <span style="font-weight:normal">
+          11/7/22
+         </span>
+        </br>
+       </td>
+       <td class="cellCenter" onclick="showAssignmentsByDate('11/8/2022');" style="cursor:pointer" title="View Assignments Due on 11/8/2022">
+        <span style="text-decoration: underline">
+         Tue
+        </span>
+        <br/>
+        <span style="font-weight:normal">
+         11/8/22
+        </span>
+       </td>
+       <td class="cellCenter" onclick="showAssignmentsByDate('11/9/2022');" style="cursor:pointer" title="View Assignments Due on 11/9/2022">
+        <span style="text-decoration: underline">
+         Wed
+        </span>
+        <br/>
+        <span style="font-weight:normal">
+         11/9/22
+        </span>
+       </td>
+       <td class="cellCenter" onclick="showAssignmentsByDate('11/10/2022');" style="cursor:pointer" title="View Assignments Due on 11/10/2022">
+        <span style="text-decoration: underline">
+         Thu
+        </span>
+        <br/>
+        <span style="font-weight:normal">
+         11/10/22
+        </span>
+       </td>
+       <td class="cellCenter" onclick="showAssignmentsByDate('11/11/2022');" style="cursor:pointer" title="View Assignments Due on 11/11/2022">
+        <span style="text-decoration: underline">
+         Fri
+        </span>
+        <br/>
+        <span style="font-weight:normal">
+         11/11/22
+        </span>
+       </td>
+      </tr>
+      <tr class="listrowodd">
+       <td class="cellLeft" nowrap="">
+        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','035-1:15');" title="Display Assignments for PHYSICAL EDUCATION 11">
+         <font color="#0000ff">
+          <u>
+           PHYSICAL EDUCATION 11
+          </u>
+         </font>
+        </span>
+       </td>
+       <td class="cellLeft" nowrap="">
+        Schroeder, Scott
+        <br/>
+        <b>
+         Email:
+        </b>
+        <a href="mailto:sschroeder@livingston.org" style="text-decoration:none">
+         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
+        </a>
+       </td>
+       <td class="cellRight" style="cursor:pointer;">
+        <table cellpadding="0" cellspacing="0" width="100%">
+         <tr>
+          <td class="cellRight" onclick="goToCourseSummary('035-1','15');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
+           <div style="text-decoration: underline">
+            99.30%
+           </div>
+          </td>
+          <td class="cellRight" onclick="goToCourseSummary('035-1','15');" style="border:0;" width="30%">
+          </td>
+         </tr>
+        </table>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+      </tr>
+      <tr class="listroweven">
+       <td class="cellLeft" nowrap="">
+        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','035-2:18');" title="Display Assignments for PHYSICAL EDUCATION 11/HEALTH 11">
+         <font color="#0000ff">
+          <u>
+           PHYSICAL EDUCATION 11/HEALTH 11
+          </u>
+         </font>
+        </span>
+       </td>
+       <td class="cellLeft" nowrap="">
+        Schroeder, Scott
+        <br/>
+        <b>
+         Email:
+        </b>
+        <a href="mailto:sschroeder@livingston.org" style="text-decoration:none">
+         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
+        </a>
+       </td>
+       <td class="cellRight" style="cursor:pointer;">
+        <table cellpadding="0" cellspacing="0" width="100%">
+         <tr>
+          <td class="cellCenter">
+           <span style="font-style:italic;color:brown;font-size: 8pt;">
+            Not Graded MP1
+           </span>
+          </td>
+         </tr>
+        </table>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+      </tr>
+      <tr class="listrowodd">
+       <td class="cellLeft" nowrap="">
+        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','130:2');" title="Display Assignments for ENGLISH 3 H">
+         <font color="#0000ff">
+          <u>
+           ENGLISH 3 H
+          </u>
+         </font>
+        </span>
+       </td>
+       <td class="cellLeft" nowrap="">
+        Clerihue, Natasha
+        <br/>
+        <b>
+         Email:
+        </b>
+        <a href="mailto:nclerihue@livingston.org" style="text-decoration:none">
+         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
+        </a>
+       </td>
+       <td class="cellRight" style="cursor:pointer;">
+        <table cellpadding="0" cellspacing="0" width="100%">
+         <tr>
+          <td class="cellRight" onclick="goToCourseSummary('130','2');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
+           <div style="text-decoration: underline">
+            89.84%
+           </div>
+          </td>
+          <td class="cellRight" onclick="goToCourseSummary('130','2');" style="border:0;" width="30%">
+          </td>
+         </tr>
+        </table>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;font-weight: bold;" title="1 Assignments Due">
+        <a href="parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=listassignments&amp;studentid=247434&amp;action=form&amp;date=11/07/2022&amp;dateRange=weekof&amp;courseAndSection=130:2" style="color:#0066CC; font-weight: bold;">
+         1
+        </a>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+      </tr>
+      <tr class="listroweven">
+       <td class="cellLeft" nowrap="">
+        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','241:3');" title="Display Assignments for AP US HISTORY 2">
+         <font color="#0000ff">
+          <u>
+           AP US HISTORY 2
+          </u>
+         </font>
+        </span>
+       </td>
+       <td class="cellLeft" nowrap="">
+        Feeley, Dawn
+        <br/>
+        <b>
+         Email:
+        </b>
+        <a href="mailto:dfeeley@livingston.org" style="text-decoration:none">
+         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
+        </a>
+       </td>
+       <td class="cellRight" style="cursor:pointer;">
+        <table cellpadding="0" cellspacing="0" width="100%">
+         <tr>
+          <td class="cellRight" onclick="goToCourseSummary('241','3');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
+           <div style="text-decoration: underline">
+            87.46%
+           </div>
+          </td>
+          <td class="cellRight" onclick="goToCourseSummary('241','3');" style="border:0;" width="30%">
+          </td>
+         </tr>
+        </table>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+      </tr>
+      <tr class="listrowodd">
+       <td class="cellLeft" nowrap="">
+        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','350:1');" title="Display Assignments for AP CALCULUS BC">
+         <font color="#0000ff">
+          <u>
+           AP CALCULUS BC
+          </u>
+         </font>
+        </span>
+       </td>
+       <td class="cellLeft" nowrap="">
+        Coursen, Cheryl
+        <br/>
+        <b>
+         Email:
+        </b>
+        <a href="mailto:ccoursen@livingston.org" style="text-decoration:none">
+         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
+        </a>
+       </td>
+       <td class="cellRight" style="cursor:pointer;">
+        <table cellpadding="0" cellspacing="0" width="100%">
+         <tr>
+          <td class="cellRight" onclick="goToCourseSummary('350','1');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
+           <div style="text-decoration: underline">
+            90.55%
+           </div>
+          </td>
+          <td class="cellRight" onclick="goToCourseSummary('350','1');" style="border:0;" width="30%">
+          </td>
+         </tr>
+        </table>
+       </td>
+       <td class="cellCenter" style="cursor:help;font-weight: bold;" title="1 Assignments Due">
+        <a href="parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=listassignments&amp;studentid=247434&amp;action=form&amp;date=11/07/2022&amp;dateRange=weekof&amp;courseAndSection=350:1" style="color:#0066CC; font-weight: bold;">
+         1
+        </a>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+      </tr>
+      <tr class="listroweven">
+       <td class="cellLeft" nowrap="">
+        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','451:1');" title="Display Assignments for AP CHEMISTRY">
+         <font color="#0000ff">
+          <u>
+           AP CHEMISTRY
+          </u>
+         </font>
+        </span>
+       </td>
+       <td class="cellLeft" nowrap="">
+        Coleman, Michael
+        <br/>
+        <b>
+         Email:
+        </b>
+        <a href="mailto:mcoleman@livingston.org" style="text-decoration:none">
+         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
+        </a>
+       </td>
+       <td class="cellRight" style="cursor:pointer;">
+        <table cellpadding="0" cellspacing="0" width="100%">
+         <tr>
+          <td class="cellRight" onclick="goToCourseSummary('451','1');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
+           <div style="text-decoration: underline">
+            91.20%
+           </div>
+          </td>
+          <td class="cellRight" onclick="goToCourseSummary('451','1');" style="border:0;" width="30%">
+          </td>
+         </tr>
+        </table>
+       </td>
+       <td class="cellCenter" style="cursor:help;font-weight: bold;" title="1 Assignments Due">
+        <a href="parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=listassignments&amp;studentid=247434&amp;action=form&amp;date=11/07/2022&amp;dateRange=weekof&amp;courseAndSection=451:1" style="color:#0066CC; font-weight: bold;">
+         1
+        </a>
+       </td>
+       <td class="cellCenter" style="cursor:help;font-weight: bold;" title="1 Assignments Due">
+        <a href="parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=listassignments&amp;studentid=247434&amp;action=form&amp;date=11/07/2022&amp;dateRange=weekof&amp;courseAndSection=451:1" style="color:#0066CC; font-weight: bold;">
+         1
+        </a>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+      </tr>
+      <tr class="listrowodd">
+       <td class="cellLeft" nowrap="">
+        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','457:5');" title="Display Assignments for AP PHYSICS 1">
+         <font color="#0000ff">
+          <u>
+           AP PHYSICS 1
+          </u>
+         </font>
+        </span>
+       </td>
+       <td class="cellLeft" nowrap="">
+        Deblieck, Megan
+        <br/>
+        <b>
+         Email:
+        </b>
+        <a href="mailto:mdeblieck@livingston.org" style="text-decoration:none">
+         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
+        </a>
+       </td>
+       <td class="cellRight" style="cursor:pointer;">
+        <table cellpadding="0" cellspacing="0" width="100%">
+         <tr>
+          <td class="cellRight" onclick="goToCourseSummary('457','5');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
+           <div style="text-decoration: underline">
+            93.07%
+           </div>
+          </td>
+          <td class="cellRight" onclick="goToCourseSummary('457','5');" style="border:0;" width="30%">
+          </td>
+         </tr>
+        </table>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+      </tr>
+      <tr class="listroweven">
+       <td class="cellLeft" nowrap="">
+        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','542:3');" title="Display Assignments for SPANISH 4 CP">
+         <font color="#0000ff">
+          <u>
+           SPANISH 4 CP
+          </u>
+         </font>
+        </span>
+       </td>
+       <td class="cellLeft" nowrap="">
+        Benavides, Oscar
+        <br/>
+        <b>
+         Email:
+        </b>
+        <a href="mailto:obenavides@livingston.org" style="text-decoration:none">
+         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
+        </a>
+       </td>
+       <td class="cellRight" style="cursor:pointer;">
+        <table cellpadding="0" cellspacing="0" width="100%">
+         <tr>
+          <td class="cellRight" onclick="goToCourseSummary('542','3');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
+           <div style="text-decoration: underline">
+            99.04%
+           </div>
+          </td>
+          <td class="cellRight" onclick="goToCourseSummary('542','3');" style="border:0;" width="30%">
+          </td>
+         </tr>
+        </table>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+      </tr>
+      <tr class="listrowodd">
+       <td class="cellLeft" nowrap="">
+        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','910:1');" title="Display Assignments for WIND SYMPHONY">
+         <font color="#0000ff">
+          <u>
+           WIND SYMPHONY
+          </u>
+         </font>
+        </span>
+       </td>
+       <td class="cellLeft" nowrap="">
+        Jedwabnik, Michael
+        <br/>
+        <b>
+         Email:
+        </b>
+        <a href="mailto:mjedwabnik@livingston.org" style="text-decoration:none">
+         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
+        </a>
+       </td>
+       <td class="cellRight" style="cursor:pointer;">
+        <table cellpadding="0" cellspacing="0" width="100%">
+         <tr>
+          <td class="cellRight" onclick="goToCourseSummary('910','1');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
+           <div style="text-decoration: underline">
+            100.00%
+           </div>
+          </td>
+          <td class="cellRight" onclick="goToCourseSummary('910','1');" style="border:0;" width="30%">
+          </td>
+         </tr>
+        </table>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;font-weight: bold;" title="1 Assignments Due">
+        <a href="parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=listassignments&amp;studentid=247434&amp;action=form&amp;date=11/07/2022&amp;dateRange=weekof&amp;courseAndSection=910:1" style="color:#0066CC; font-weight: bold;">
+         1
+        </a>
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
+        0
+       </td>
+      </tr>
+     </table>
     </td>
    </tr>
   </table>
-  <br/>
-  <br/>
-  <br/>
-  <form action="j_security_check" id="logon" method="post" name="logon" novalidate="">
-   <input id="idTokenInput" name="idTokenString" type="hidden"/>
-   <div style="background-color: #195876; width: 575px; margin-left:20px;box-shadow: rgba(0,0,0,0.3) 1px 1px 3px 0; opacity:1;">
-    <div style="padding-left: 15px; padding-right: 15px;opacity:1.0;">
-     <p style="color: #FFFFFF; text-shadow: 1px 1px 1px rgba(0,0,0,0.3); font-weight: 800; font-size: 13pt; line-height: 14pt; margin:0; padding:0; padding-top:20px">
-      Livingston Public Schools
-     </p>
-     <h1 style="color: #FFFFFF; text-shadow: 1px 1px 1px rgba(0,0,0,0.3); font-weight:300; font-size: 40pt; margin:0; padding:0; padding-bottom: 15px">
-      Student Access
-     </h1>
-    </div>
-    <div style="background-color: rgb(51,171,222); min-height: 225px; padding-left: 15px; padding-right: 15px; padding-top: 15px">
-     <label for="j_username" style="color:rgb(0,0,0); font-size: 13pt; line-height:13pt;font-weight: bold;">
-      User Name:
-     </label>
-     <div onclick="document.getElementById('j_username').focus();" style="vertical-align: middle; padding:8px; background-color: #FFFFFF; width: 80%">
-      <img alt="username icon" src="/livingston/parents/images/buttons/username.png"/>
-      <input autocapitalize="off" id="j_username" maxlength="150" name="j_username" size="35" style="border: none; outline: none; font-size: 14pt; line-heigh: 14pt; font-weight: normal; color: rgb(0,27,48)" type="email">
-      </input>
+  <script type="text/javascript">
+   function toggleLanguage()
+    {
+        location.href = document.URL + '&toggleLanguage=true';
+    }
+
+    function toggleMobileSite()
+    {
+        location.href = document.URL + '&toggleMobileSite=true';
+    }
+  </script>
+  <table cellpadding="0" cellspacing="0" class="footer">
+   <tr>
+    <td>
+     <div id="google_translate_element">
      </div>
-     <div style="height: 10px">
-     </div>
-     <label for="j_password" style="color:rgb(0,0,0); font-size: 13pt; line-height:13pt;font-weight: bold;">
-      Password:
-     </label>
-     <div onclick="document.getElementById('j_password').focus();" style="vertical-align: middle; padding:8px; background-color: #FFFFFF; width: 60%">
-      <img alt="password icon" src="/livingston/parents/images/buttons/password.png"/>
-      <input autocomplete="off" class="normal" id="j_password" maxlength="255" name="j_password" size="25" style="border: none; outline: none; font-size: 14pt; line-heigh: 14pt; font-weight: bold; color: rgb(0,27,48)" type="password"/>
-     </div>
-     <br/>
-     <input class="saveButton" style="color: #000000;background-color: #e0e0e0; font-weight: 500;" type="submit" value="Login">
-      <br/>
-      <div style="color: #33abde ">
-       .
-      </div>
-     </input>
-    </div>
-   </div>
-  </form>
-  <br>
-   <div class="notecard" style="margin-left: 20px; width: 50%; min-width: 527px; opacity:0.9;">
-    <p style="text-align:left">
-     <p>
-      <span style="font-size:16px">
-       <span style="color:#FF0000">
-        <strong>
-         If you lock your Student Access account, wait 20 minutes and try again.
-        </strong>
-       </span>
-      </span>
-     </p>
-     <p>
-      <span style="color:rgb(255, 0, 255); font-size:16px">
-       <strong>
-        Student schedules have been published. You and your parents sign all of the required forms and documents before you can see this information.
-       </strong>
-      </span>
-     </p>
-     <p>
-      <span style="color:rgb(255, 0, 255); font-size:16px">
-       <strong>
-        Do not access your parents account for
-        <u>
-         ANY
-        </u>
-        reason.
-       </strong>
-      </span>
-     </p>
-     <p>
-     </p>
-    </p>
-   </div>
-   <div id="invalidSSO" style="display: none">
-    <div style="font-weight: bold;text-align: center;font-weight: normal">
-     The following error has prevented you from logging in:
-     <br/>
-     <b>
-     </b>
-    </div>
-   </div>
-   <div id="google_translate_element" style="margin-left: 20px;">
-   </div>
-   <script type="text/javascript">
-    // function googleTranslateElementInit()
-                          // {
-                          //     // TODO: If any changes are made to includedLanguages, copy them to parentsFooter.jsp and openRegistration/header.jsp
-                          //     new google.translate.TranslateElement({
-                          //         pageLanguage: 'en',
-                          //         includedLanguages: 'ar,es,it,ja,pt,zh-CN,en,ru,ko,gu,tl,fa,vi,pl',
-                          //         layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                          //     }, 'google_translate_element');
-                          // }
-                         function googleTranslateElementInit() {
-                           new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
-                         }
-   </script>
-   <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript">
-   </script>
-  </br>
- </body>
- <div id="invalidCaptcha" style="display: none">
-  <div style="font-weight: bold;text-align: center">
-   Invalid Captcha
-  </div>
- </div>
- <div id="resetEmail" style="display: none">
-  <div>
-   <p>
-    Please enter the email address that is registered to you along with the captcha.  An email will be sent to that address as soon as possible.
-   </p>
-   <form action="/livingston/forgotMyPassword">
-    <input id="portal" name="portal" type="hidden" value="Y"/>
-    <div>
-     <div>
-      Email:
-     </div>
-     <div>
-      <input id="emailAddress" name="emailAddress" type="text"/>
-     </div>
-    </div>
-    <br/>
-    <div>
-     <script>
-      function updateCaptcha(){       $('#captcha')[0].src='/livingston/captcha?' + (new Date().getMilliseconds())   }
+     <script type="text/javascript">
+      // TODO: If any changes are made to includedLanguages, copy them to parentsFooterMobile.jsp and openRegistration/header.jsp
+
+                  function googleTranslateElementInit() {
+                                  new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element'); }
      </script>
-     <div>
-      <img alt="" id="captcha" src="/livingston/captcha"/>
-     </div>
-     <div>
-      <input id="captcha" name="captcha" type="text"/>
-      <img alt="Refresh Captcha" onclick="updateCaptcha()" src="/livingston/images/reload.png" style="cursor:pointer" title="Refresh Captcha"/>
-      <div>
-       Enter 5 Character captcha from above
-      </div>
-     </div>
-    </div>
-   </form>
+     <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript">
+     </script>
+     <a href="javascript:toggleMobileSite();" style="margin-left: 10pt;" target="_top">
+      Mobile
+     </a>
+    </td>
+    <td style="text-align: right">
+     ©Copyright Genesis Educational Services,Inc.
+    </td>
+   </tr>
+  </table>
+  <div style="display:none">
+   <div id="_dialog-confirm_" style="background-color:#FFFFF1" title="">
+    <table>
+     <tr>
+      <td>
+       <img src="/livingston/images/help2_48.png">
+       </img>
+      </td>
+      <td>
+       <div id="_confirmDialogText_">
+       </div>
+      </td>
+     </tr>
+    </table>
+   </div>
+   <div id="_dialog-prompt_" style="background-color:#FFFFF1" title="">
+    <table>
+     <tr>
+      <td>
+       <img src="/livingston/images/help2_48.png">
+       </img>
+      </td>
+      <td>
+       <div id="_confirmPromptText_">
+       </div>
+       <f2:text maxlength="255" nameid="_prompt_dialog_value_" size="50" value="">
+       </f2:text>
+      </td>
+     </tr>
+    </table>
+   </div>
+   <div id="_dialog-alert_" style="background-color:#FFFFF1" title="">
+    <table>
+     <tr>
+      <td>
+       <img src="/livingston/images/info_48.png">
+       </img>
+      </td>
+      <td>
+       <div id="_confirmAlertText_">
+       </div>
+      </td>
+     </tr>
+    </table>
+   </div>
   </div>
-  <br/>
-  <button class="genesisButton" id="__submit1__" onclick="document.getElementById('__submit1__').style.display = 'none';document.getElementById('__submit1__div').style.display = 'inline';" style="white-space:nowrap;" type="submit" value="Reset Password">
-   Reset Password
-  </button>
-  <span class="fieldlabel" id="__submit1__div" style="display:none">
-   One moment...
-  </span>
- </div>
+ </body>
 </html>
