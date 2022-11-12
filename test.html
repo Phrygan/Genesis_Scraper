@@ -13,53 +13,65 @@
    Parents at Livingston Public Schools
   </title>
   <script type="text/javascript">
-   var newAction = '';
-        function changeDate(date)
+   function viewDocument(courseid, assignmentid, name, type)
         {
-            document.getElementById('fldDate').className='fieldvaluechanged';
-            location.href = '/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=weeklysummary&studentid=247434&mpToView=MP1&action=form&date=' + date;
+            window.open('/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=coursesummary&studentid=247434&action=viewDocument&courseid=' + courseid + '&stripCode=' + assignmentid + '&fileName=' + encodeURIComponent(name) + '&fileType=' + type,'Document');
         }
 
-        function showAssignmentsByDate(date)
+        function displayComments(assignmentid)
         {
-            newAction='/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=247434&action=form&dateRange=dayof&date=' + date + "&courseAndSection=all";
-            document.frmDate.action = newAction;
-            document.frmDate.submit();
+            var objPicture = document.getElementById('picComment' + assignmentid);
+            if (document.getElementById('divComments' + assignmentid).style.display == 'none')
+            {
+                document.getElementById('divComments' + assignmentid).style.display = 'inline';
+            }
+            else
+                document.getElementById('divComments' + assignmentid).style.display = 'none';
         }
 
-        function showAssignmentsByMPAndCourse(date,courseAndSection)
+        function printRubric(assignmentid, courseCode, courseSection, schoolCode, courseid)
         {
-            var dateRange = 'MP1';
-            
-            newAction='/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=247434&action=form&dateRange=' + dateRange +
-                '&date=' + date + '&courseAndSection=' + courseAndSection;
-            document.frmDate.action = newAction;
-            document.frmDate.submit();
+            window.open('/livingston/parents?tab1=studentdata&tab2=gradebook&studentid=247434&type=class&grades=y&action=printRubric&schoolYear=2022-23&schoolCode=' + schoolCode + '&assignmentid=' + assignmentid + '&courseCode=' + courseCode + '&courseSection=' + courseSection + '&courseid=' + courseid,'','location=no,status=no');
         }
 
-        function searchRecentlyUpdated()
+        function openDescriptionDiv(assid)
         {
-            var date = document.getElementById('fldDate').value;
-            var dateRange = 'MP1';
-            var courseAndSection = '';
-            var status = 'UPDATED';
-
-            newAction='/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid=247434&action=form&date=' + date +
-                '&dateRange=' + dateRange + '&courseAndSection=' + courseAndSection + '&status=' + status;
-            document.frmDate.action = newAction;
-
-            document.frmDate.submit();
+            if (document.getElementById('divDescription' + assid).style.display == 'none')
+            {
+                var ta = document.getElementById('divDescription' + assid);
+                document.getElementById('divDescription' + assid).style.display = 'inline-block';
+                document.getElementById('EndDescription' + assid).focus();
+            }
+            else
+                document.getElementById('divDescription' + assid).style.display = 'none';
         }
 
-        function switchMarkingPeriod(mp)
+        function changeCourse(courseSectionKey)
         {
-            location.href = '/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=weeklysummary&studentid=247434&action=form&mpToView=' + mp;
+            var courseCode      = courseSectionKey.substring(0,courseSectionKey.indexOf(":"));
+            var courseSection   = courseSectionKey.substring(courseSectionKey.indexOf(":") + 1);
+            location.href = '/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=coursesummary&studentid=247434&mp=MP1&action=form&courseCode=' + courseCode + '&courseSection=' + courseSection;
         }
 
-        function goToCourseSummary(courseCode, courseSection)
+        function displayMPs()
         {
-            if ('MP1' != 'FG')
-                location.href = '/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=coursesummary&studentid=247434&action=form&courseCode=' + courseCode + '&courseSection=' + courseSection + '&mp=MP1';
+            $( '#divChangeMarkingPeriod').dialog({
+                resizable: false,
+                height:'auto',
+                width:'auto',
+                modal: true,
+                buttons: {
+                    'Switch Marking Period': function() {
+                        $( this ).dialog( "close" );
+                        var markingPeriod = document.getElementById('fldSwitchMP').value;
+                        location.href = '/livingston/parents?tab1=studentdata&tab2=gradebook&tab3=coursesummary&studentid=247434&mp=' + markingPeriod + '&action=form&courseCode=035-1&courseSection=15';
+                    },
+                    Cancel: function() {
+                        $( this ).dialog( "close" );
+                    }
+                }
+            });
+
         }
   </script>
  </head>
@@ -326,13 +338,13 @@
   </div>
   <br/>
   <div class="studentTabBar">
-   <span class="studentTabSelected" onclick="header_goToTab('studentdata&amp;tab2=gradebook&amp;tab3=weeklysummary','studentid=247434');">
+   <span class="studentTab" onclick="header_goToTab('studentdata&amp;tab2=gradebook&amp;tab3=weeklysummary','studentid=247434');">
     Weekly Summary
    </span>
    <span class="studentTab" onclick="header_goToTab('studentdata&amp;tab2=gradebook&amp;tab3=listassignments','studentid=247434');">
     List Assignments
    </span>
-   <span class="studentTab" onclick="header_goToTab('studentdata&amp;tab2=gradebook&amp;tab3=coursesummary','studentid=247434');">
+   <span class="studentTabSelected" onclick="header_goToTab('studentdata&amp;tab2=gradebook&amp;tab3=coursesummary','studentid=247434');">
     Course Summary
    </span>
   </div>
@@ -356,6 +368,56 @@
         checkbox.onchange();
     }
   </script>
+  <div id="divChangeMarkingPeriod" style="display:none;" title="Switch Marking Period">
+   <div class="alignCenter" style="padding:20px;">
+    Switch to
+    <select class="fieldvalue" id="fldSwitchMP">
+     <option selected="" value="MP1">
+      Marking Period 1
+     </option>
+    </select>
+   </div>
+  </div>
+  <div style="text-align: center;font-weight: bold;font-size: 14pt;">
+   <span style="text-shadow: 1px 1px 1px rgba(0,0,0,0.3)">
+    Course Summary for
+   </span>
+   <select class="headerFunkySelectorInput" id="fldCourse" name="fldCourse" onchange="changeCourse(this.value);">
+    <option selected="" value="035-1:15">
+     PHYSICAL EDUCATION 11
+    </option>
+    <option value="130:2">
+     ENGLISH 3 H
+    </option>
+    <option value="241:3">
+     AP US HISTORY 2
+    </option>
+    <option value="350:1">
+     AP CALCULUS BC
+    </option>
+    <option value="451:1">
+     AP CHEMISTRY
+    </option>
+    <option value="457:5">
+     AP PHYSICS 1
+    </option>
+    <option value="542:3">
+     SPANISH 4 CP
+    </option>
+    <option value="910:1">
+     WIND SYMPHONY
+    </option>
+   </select>
+  </div>
+  <div style="text-align: center;font-size: 12pt;padding:5px;">
+   Marking Period 1 Grade:
+   <b>
+    99.30%
+   </b>
+   <span onclick="displayMPs();" style="color: blue; font-size: 8pt; text-decoration: underline; cursor: pointer;">
+    Change Marking Period
+   </span>
+  </div>
   <table aria-label=" + m_title + " class="notecard" role="main" style="">
    <tr>
     <td class="notecardTitle">
@@ -365,674 +427,513 @@
    </tr>
    <tr>
     <td colspan="2">
-     <p class="sectionTitle">
-      Hong, Andrew
-     </p>
-     <form action="" method="post" name="frmDate" target="_top">
-      <p style="text-align: center">
-       <span onclick="changeDate('10/31/2022');" style="cursor: pointer;">
-        &lt;&lt;
-       </span>
-       <select class="fieldvalue" id="fldDate" name="fldDate" onchange="changeDate(this.value);">
-        <option value="08/29/2022">
-         Week of 08/29/2022
-        </option>
-        <option value="09/05/2022">
-         Week of 09/05/2022
-        </option>
-        <option value="09/12/2022">
-         Week of 09/12/2022
-        </option>
-        <option value="09/19/2022">
-         Week of 09/19/2022
-        </option>
-        <option value="09/26/2022">
-         Week of 09/26/2022
-        </option>
-        <option value="10/03/2022">
-         Week of 10/03/2022
-        </option>
-        <option value="10/10/2022">
-         Week of 10/10/2022
-        </option>
-        <option value="10/17/2022">
-         Week of 10/17/2022
-        </option>
-        <option value="10/24/2022">
-         Week of 10/24/2022
-        </option>
-        <option value="10/31/2022">
-         Week of 10/31/2022
-        </option>
-        <option selected="" value="11/07/2022">
-         Week of 11/07/2022 (Current)
-        </option>
-        <option value="11/14/2022">
-         Week of 11/14/2022
-        </option>
-        <option value="11/21/2022">
-         Week of 11/21/2022
-        </option>
-        <option value="11/28/2022">
-         Week of 11/28/2022
-        </option>
-        <option value="12/05/2022">
-         Week of 12/05/2022
-        </option>
-        <option value="12/12/2022">
-         Week of 12/12/2022
-        </option>
-        <option value="12/19/2022">
-         Week of 12/19/2022
-        </option>
-        <option value="12/26/2022">
-         Week of 12/26/2022
-        </option>
-        <option value="01/02/2023">
-         Week of 01/02/2023
-        </option>
-        <option value="01/09/2023">
-         Week of 01/09/2023
-        </option>
-        <option value="01/16/2023">
-         Week of 01/16/2023
-        </option>
-        <option value="01/23/2023">
-         Week of 01/23/2023
-        </option>
-        <option value="01/30/2023">
-         Week of 01/30/2023
-        </option>
-        <option value="02/06/2023">
-         Week of 02/06/2023
-        </option>
-        <option value="02/13/2023">
-         Week of 02/13/2023
-        </option>
-        <option value="02/20/2023">
-         Week of 02/20/2023
-        </option>
-        <option value="02/27/2023">
-         Week of 02/27/2023
-        </option>
-        <option value="03/06/2023">
-         Week of 03/06/2023
-        </option>
-        <option value="03/13/2023">
-         Week of 03/13/2023
-        </option>
-        <option value="03/20/2023">
-         Week of 03/20/2023
-        </option>
-        <option value="03/27/2023">
-         Week of 03/27/2023
-        </option>
-        <option value="04/03/2023">
-         Week of 04/03/2023
-        </option>
-        <option value="04/10/2023">
-         Week of 04/10/2023
-        </option>
-        <option value="04/17/2023">
-         Week of 04/17/2023
-        </option>
-        <option value="04/24/2023">
-         Week of 04/24/2023
-        </option>
-        <option value="05/01/2023">
-         Week of 05/01/2023
-        </option>
-        <option value="05/08/2023">
-         Week of 05/08/2023
-        </option>
-        <option value="05/15/2023">
-         Week of 05/15/2023
-        </option>
-        <option value="05/22/2023">
-         Week of 05/22/2023
-        </option>
-        <option value="05/29/2023">
-         Week of 05/29/2023
-        </option>
-        <option value="06/05/2023">
-         Week of 06/05/2023
-        </option>
-        <option value="06/12/2023">
-         Week of 06/12/2023
-        </option>
-       </select>
-       <span onclick="changeDate('11/14/2022');" style="cursor: pointer;">
-        &gt;&gt;
-       </span>
-      </p>
-     </form>
-     <p style="text-align: center">
-      <span onclick="searchRecentlyUpdated();" style="cursor:pointer;color:#0000dd" title="Click to view updated grades">
-       <img align="absmiddle" alt="" src="/livingston/parents/images/buttons/info.png" title="Click to view updated grades"/>
-       <u>
-        Andrew has new grades!
-       </u>
-      </span>
-     </p>
-     <p style="text-align: center;">
-      <img src="/livingston/parents/images/buttons/blueAdobe.png" style="width:24px;"/>
-      <a href="/livingston/parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=weeklysummary&amp;studentid=247434&amp;action=print&amp;dateRange=weekof&amp;date=11/07/2022&amp;mpToView=MP1" target="_blank">
-       Printable Version of Weekly Assignment List
-      </a>
-     </p>
-     <table border="0" class="list">
-      <tr class="listheading">
-       <td class="cellLeft" nowrap="">
-        Courses
-       </td>
-       <td class="cellLeft" nowrap="">
-        Teacher
-       </td>
-       <td class="cellCenter">
-        <select class="fieldvalue" name="fldMarkingPeriod" onchange="switchMarkingPeriod(this.value);">
-         <option selected="" value="MP1">
-          MP1
-         </option>
-        </select>
-        Avg
-       </td>
-       <td class="cellCenter" onclick="showAssignmentsByDate('11/7/2022');" style="cursor:pointer" title="View Assignments Due on 11/7/2022">
-        <span style="text-decoration: underline">
-         Mon
-        </span>
-        <br>
-         <span style="font-weight:normal">
-          11/7/22
-         </span>
-        </br>
-       </td>
-       <td class="cellCenter" onclick="showAssignmentsByDate('11/8/2022');" style="cursor:pointer" title="View Assignments Due on 11/8/2022">
-        <span style="text-decoration: underline">
-         Tue
-        </span>
-        <br/>
-        <span style="font-weight:normal">
-         11/8/22
-        </span>
-       </td>
-       <td class="cellCenter" onclick="showAssignmentsByDate('11/9/2022');" style="cursor:pointer" title="View Assignments Due on 11/9/2022">
-        <span style="text-decoration: underline">
-         Wed
-        </span>
-        <br/>
-        <span style="font-weight:normal">
-         11/9/22
-        </span>
-       </td>
-       <td class="cellCenter" onclick="showAssignmentsByDate('11/10/2022');" style="cursor:pointer" title="View Assignments Due on 11/10/2022">
-        <span style="text-decoration: underline">
-         Thu
-        </span>
-        <br/>
-        <span style="font-weight:normal">
-         11/10/22
-        </span>
-       </td>
-       <td class="cellCenter" onclick="showAssignmentsByDate('11/11/2022');" style="cursor:pointer" title="View Assignments Due on 11/11/2022">
-        <span style="text-decoration: underline">
-         Fri
-        </span>
-        <br/>
-        <span style="font-weight:normal">
-         11/11/22
-        </span>
-       </td>
-      </tr>
-      <tr class="listrowodd">
-       <td class="cellLeft" nowrap="">
-        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','035-1:15');" title="Display Assignments for PHYSICAL EDUCATION 11">
-         <font color="#0000ff">
-          <u>
-           PHYSICAL EDUCATION 11
-          </u>
-         </font>
-        </span>
-       </td>
-       <td class="cellLeft" nowrap="">
-        Schroeder, Scott
-        <br/>
-        <b>
-         Email:
-        </b>
-        <a href="mailto:sschroeder@livingston.org" style="text-decoration:none">
-         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
-        </a>
-       </td>
-       <td class="cellRight" style="cursor:pointer;">
-        <table cellpadding="0" cellspacing="0" width="100%">
-         <tr>
-          <td class="cellRight" onclick="goToCourseSummary('035-1','15');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
-           <div style="text-decoration: underline">
-            99.30%
-           </div>
-          </td>
-          <td class="cellRight" onclick="goToCourseSummary('035-1','15');" style="border:0;" width="30%">
-          </td>
-         </tr>
-        </table>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-      </tr>
-      <tr class="listroweven">
-       <td class="cellLeft" nowrap="">
-        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','035-2:18');" title="Display Assignments for PHYSICAL EDUCATION 11/HEALTH 11">
-         <font color="#0000ff">
-          <u>
-           PHYSICAL EDUCATION 11/HEALTH 11
-          </u>
-         </font>
-        </span>
-       </td>
-       <td class="cellLeft" nowrap="">
-        Schroeder, Scott
-        <br/>
-        <b>
-         Email:
-        </b>
-        <a href="mailto:sschroeder@livingston.org" style="text-decoration:none">
-         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
-        </a>
-       </td>
-       <td class="cellRight" style="cursor:pointer;">
-        <table cellpadding="0" cellspacing="0" width="100%">
-         <tr>
-          <td class="cellCenter">
-           <span style="font-style:italic;color:brown;font-size: 8pt;">
-            Not Graded MP1
+     <div style="font-size: 12pt; max-width: 1200px">
+      <table class="list" style="margin:auto;">
+       <tr>
+        <td colspan="15">
+         <div style="float:left;font-size: 14pt;">
+          <b>
+           Assignments
+          </b>
+          <span style="font-size: 11pt;">
+           Marking Period 1   09/01/22 to 01/27/23
+          </span>
+         </div>
+         <div style="font-size: 10pt;font-style: italic;text-align: right;float:right;padding-right:20px;">
+          Last grade posted on 11/07
+         </div>
+        </td>
+       </tr>
+       <tr class="listheading">
+        <td class="cellLeft" nowrap="">
+         MP
+        </td>
+        <td class="cellLeft" nowrap="">
+         Due
+        </td>
+        <td class="cellLeft" nowrap="">
+         Teacher
+        </td>
+        <td class="cellLeft" nowrap="">
+         Category
+        </td>
+        <td class="cellLeft" nowrap="">
+         Assignment
+        </td>
+        <td class="cellLeft" nowrap="">
+         Grade
+         <img class="icon" onclick="showAutoTooltip('dialog-auto-tooltip1','400');" role="button" src="/livingston/images/newIcons/infoGreen.svg" style="cursor:help;vertical-align:text-bottom;" tabindex="0" title="Percentage is rounded to Hundredths Place" width="16"/>
+         <script type="text/javascript">
+          function showAutoTooltip(dialogDivId, dialogWidth)
+        {
+            $( '#' + dialogDivId).dialog({
+                title: 'Information',
+                resizable: false,
+                height:'auto',
+                width: dialogWidth,
+                modal: true,
+                buttons:
+                {
+                    OK: function()
+                    {
+                        $( this ).dialog( "close" );
+                    }
+                }
+            });
+        }
+         </script>
+        </td>
+        <td class="cellLeft" nowrap="">
+         Comment
+        </td>
+        <td class="cellLeft" nowrap="">
+         Prev
+        </td>
+        <td class="cellLeft" nowrap="">
+         Docs
+        </td>
+       </tr>
+       <tr class="listroweven" height="25px">
+        <td class="cellLeft" height="25px">
+         MP1
+        </td>
+        <td class="cellLeft" height="25px">
+         <div>
+          Fri
+         </div>
+         <div>
+          10/21
+         </div>
+        </td>
+        <td class="cellLeft" height="25px">
+         Schroeder, Scott
+        </td>
+        <td class="cellLeft" height="25px">
+         <div class="boxShadow" id="divDescription1110115" style="display:none;background-color: white;border:1px ridge #dcdcdc;position:absolute; width:400px;min-height:100px;overflow: hidden;">
+          <table cellpadding="2" cellspacing="2" width="100%">
+           <tr>
+            <td class="cellRight" style="background-color: beige;">
+             <span onclick="openDescriptionDiv('1110115');" style="color:blue;cursor:pointer;text-decoration: underline;">
+              Close
+             </span>
+            </td>
+           </tr>
+           <tr>
+            <td class="cellCenter" style="font-weight:bold;border: 1px solid black;">
+             Part
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <div style="font-size: 11pt; min-height: 100px;text-align: left;margin: auto;padding: 0 15px 5px 15px;">
+             </div>
+            </td>
+           </tr>
+           <tr>
+            <td align="center">
+             <input class="fieldvalue" id="EndDescription1110115" onclick="openDescriptionDiv('1110115');" type="button" value="Close Window"/>
+            </td>
+           </tr>
+          </table>
+         </div>
+         Physical Education: Participation
+        </td>
+        <td class="cellLeft">
+         <b>
+          Part
+         </b>
+         <div class="boxShadow" id="divComments1110115" style="display:none;position:absolute;width:450px;background-color:#f5f5f5;border:1px solid #000000;text-align: center;padding-bottom: 5px;">
+          <table class="fieldlabel" width="100%">
+           <tr>
+            <td align="left" style="font-weight:bold;text-decoration: underline;">
+             Comment from Schroeder, Scott:
+            </td>
+            <td align="right">
+             <span onclick="displayComments('1110115');" style="text-align: right;color:blue;cursor:pointer;">
+              Close
+             </span>
+            </td>
+           </tr>
+           <tr>
+            <td align="left" colspan="2">
+            </td>
+           </tr>
+          </table>
+         </div>
+        </td>
+        <td align="right" class="cellLeft" nowrap="">
+         9.8
+                                
+                                    / 10
+         <div style="font-weight: bold;">
+          98.00%
+         </div>
+        </td>
+        <td class="cellLeft">
+        </td>
+        <td class="cellLeft" title="">
+        </td>
+        <td class="cellLeft" title="Assignment Documents">
+        </td>
+       </tr>
+       <tr class="listrowodd" height="25px">
+        <td class="cellLeft" height="25px">
+         MP1
+        </td>
+        <td class="cellLeft" height="25px">
+         <div>
+          Fri
+         </div>
+         <div>
+          10/7
+         </div>
+        </td>
+        <td class="cellLeft" height="25px">
+         Schroeder, Scott
+        </td>
+        <td class="cellLeft" height="25px">
+         <div class="boxShadow" id="divDescription1110110" style="display:none;background-color: white;border:1px ridge #dcdcdc;position:absolute; width:400px;min-height:100px;overflow: hidden;">
+          <table cellpadding="2" cellspacing="2" width="100%">
+           <tr>
+            <td class="cellRight" style="background-color: beige;">
+             <span onclick="openDescriptionDiv('1110110');" style="color:blue;cursor:pointer;text-decoration: underline;">
+              Close
+             </span>
+            </td>
+           </tr>
+           <tr>
+            <td class="cellCenter" style="font-weight:bold;border: 1px solid black;">
+             Part
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <div style="font-size: 11pt; min-height: 100px;text-align: left;margin: auto;padding: 0 15px 5px 15px;">
+             </div>
+            </td>
+           </tr>
+           <tr>
+            <td align="center">
+             <input class="fieldvalue" id="EndDescription1110110" onclick="openDescriptionDiv('1110110');" type="button" value="Close Window"/>
+            </td>
+           </tr>
+          </table>
+         </div>
+         Physical Education: Participation
+        </td>
+        <td class="cellLeft">
+         <b>
+          Part
+         </b>
+         <div class="boxShadow" id="divComments1110110" style="display:none;position:absolute;width:450px;background-color:#f5f5f5;border:1px solid #000000;text-align: center;padding-bottom: 5px;">
+          <table class="fieldlabel" width="100%">
+           <tr>
+            <td align="left" style="font-weight:bold;text-decoration: underline;">
+             Comment from Schroeder, Scott:
+            </td>
+            <td align="right">
+             <span onclick="displayComments('1110110');" style="text-align: right;color:blue;cursor:pointer;">
+              Close
+             </span>
+            </td>
+           </tr>
+           <tr>
+            <td align="left" colspan="2">
+            </td>
+           </tr>
+          </table>
+         </div>
+        </td>
+        <td align="right" class="cellLeft" nowrap="">
+         10
+                                
+                                    / 10
+         <div style="font-weight: bold;">
+          100.00%
+         </div>
+        </td>
+        <td class="cellLeft">
+        </td>
+        <td class="cellLeft" title="">
+        </td>
+        <td class="cellLeft" title="Assignment Documents">
+        </td>
+       </tr>
+       <tr class="listroweven" height="25px">
+        <td class="cellLeft" height="25px">
+         MP1
+        </td>
+        <td class="cellLeft" height="25px">
+         <div>
+          Fri
+         </div>
+         <div>
+          9/16
+         </div>
+        </td>
+        <td class="cellLeft" height="25px">
+         Schroeder, Scott
+        </td>
+        <td class="cellLeft" height="25px">
+         <div class="boxShadow" id="divDescription1110105" style="display:none;background-color: white;border:1px ridge #dcdcdc;position:absolute; width:400px;min-height:100px;overflow: hidden;">
+          <table cellpadding="2" cellspacing="2" width="100%">
+           <tr>
+            <td class="cellRight" style="background-color: beige;">
+             <span onclick="openDescriptionDiv('1110105');" style="color:blue;cursor:pointer;text-decoration: underline;">
+              Close
+             </span>
+            </td>
+           </tr>
+           <tr>
+            <td class="cellCenter" style="font-weight:bold;border: 1px solid black;">
+             Part
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <div style="font-size: 11pt; min-height: 100px;text-align: left;margin: auto;padding: 0 15px 5px 15px;">
+             </div>
+            </td>
+           </tr>
+           <tr>
+            <td align="center">
+             <input class="fieldvalue" id="EndDescription1110105" onclick="openDescriptionDiv('1110105');" type="button" value="Close Window"/>
+            </td>
+           </tr>
+          </table>
+         </div>
+         Physical Education: Participation
+        </td>
+        <td class="cellLeft">
+         <b>
+          Part
+         </b>
+         <div class="boxShadow" id="divComments1110105" style="display:none;position:absolute;width:450px;background-color:#f5f5f5;border:1px solid #000000;text-align: center;padding-bottom: 5px;">
+          <table class="fieldlabel" width="100%">
+           <tr>
+            <td align="left" style="font-weight:bold;text-decoration: underline;">
+             Comment from Schroeder, Scott:
+            </td>
+            <td align="right">
+             <span onclick="displayComments('1110105');" style="text-align: right;color:blue;cursor:pointer;">
+              Close
+             </span>
+            </td>
+           </tr>
+           <tr>
+            <td align="left" colspan="2">
+            </td>
+           </tr>
+          </table>
+         </div>
+        </td>
+        <td align="right" class="cellLeft" nowrap="">
+         10
+                                
+                                    / 10
+         <div style="font-weight: bold;">
+          100.00%
+         </div>
+        </td>
+        <td class="cellLeft">
+        </td>
+        <td class="cellLeft" title="">
+        </td>
+        <td class="cellLeft" title="Assignment Documents">
+        </td>
+       </tr>
+       <tr>
+        <td colspan="15">
+         <div style="font-size: 10pt;padding-top:5px;padding-left: 10px;">
+          * Assignments graded as
+          <b>
+           EX (Exempt)
+          </b>
+          or
+          <b>
+           ABS (Absent)
+          </b>
+          do not impact a student's grade.
+         </div>
+         <div style="font-size: 10pt;padding-bottom:5px;padding-left: 10px;">
+          * Assignments graded as
+          <b>
+           M (Missing)
+          </b>
+          counts as
+          <b>
+           0.0%
+          </b>
+          and
+          <b>
+           INC (Incomplete)
+          </b>
+          counts as
+          <b>
+           0.0%
+          </b>
+          .
+         </div>
+        </td>
+       </tr>
+       <tr>
+        <td colspan="15">
+         <div style="padding-top: 22px;">
+          <div style="text-align: left;font-size: 14pt;padding-bottom:3px;">
+           <b>
+            Grading Information
+           </b>
+           <span style="font-size: 11pt;">
+            Marking Period 1
            </span>
-          </td>
-         </tr>
-        </table>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-      </tr>
-      <tr class="listrowodd">
-       <td class="cellLeft" nowrap="">
-        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','130:2');" title="Display Assignments for ENGLISH 3 H">
-         <font color="#0000ff">
-          <u>
-           ENGLISH 3 H
-          </u>
-         </font>
-        </span>
-       </td>
-       <td class="cellLeft" nowrap="">
-        Clerihue, Natasha
-        <br/>
-        <b>
-         Email:
-        </b>
-        <a href="mailto:nclerihue@livingston.org" style="text-decoration:none">
-         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
-        </a>
-       </td>
-       <td class="cellRight" style="cursor:pointer;">
-        <table cellpadding="0" cellspacing="0" width="100%">
-         <tr>
-          <td class="cellRight" onclick="goToCourseSummary('130','2');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
-           <div style="text-decoration: underline">
-            89.84%
-           </div>
-          </td>
-          <td class="cellRight" onclick="goToCourseSummary('130','2');" style="border:0;" width="30%">
-          </td>
-         </tr>
-        </table>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;font-weight: bold;" title="1 Assignments Due">
-        <a href="parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=listassignments&amp;studentid=247434&amp;action=form&amp;date=11/07/2022&amp;dateRange=weekof&amp;courseAndSection=130:2" style="color:#0066CC; font-weight: bold;">
-         1
-        </a>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-      </tr>
-      <tr class="listroweven">
-       <td class="cellLeft" nowrap="">
-        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','241:3');" title="Display Assignments for AP US HISTORY 2">
-         <font color="#0000ff">
-          <u>
-           AP US HISTORY 2
-          </u>
-         </font>
-        </span>
-       </td>
-       <td class="cellLeft" nowrap="">
-        Feeley, Dawn
-        <br/>
-        <b>
-         Email:
-        </b>
-        <a href="mailto:dfeeley@livingston.org" style="text-decoration:none">
-         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
-        </a>
-       </td>
-       <td class="cellRight" style="cursor:pointer;">
-        <table cellpadding="0" cellspacing="0" width="100%">
-         <tr>
-          <td class="cellRight" onclick="goToCourseSummary('241','3');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
-           <div style="text-decoration: underline">
-            87.46%
-           </div>
-          </td>
-          <td class="cellRight" onclick="goToCourseSummary('241','3');" style="border:0;" width="30%">
-          </td>
-         </tr>
-        </table>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-      </tr>
-      <tr class="listrowodd">
-       <td class="cellLeft" nowrap="">
-        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','350:1');" title="Display Assignments for AP CALCULUS BC">
-         <font color="#0000ff">
-          <u>
-           AP CALCULUS BC
-          </u>
-         </font>
-        </span>
-       </td>
-       <td class="cellLeft" nowrap="">
-        Coursen, Cheryl
-        <br/>
-        <b>
-         Email:
-        </b>
-        <a href="mailto:ccoursen@livingston.org" style="text-decoration:none">
-         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
-        </a>
-       </td>
-       <td class="cellRight" style="cursor:pointer;">
-        <table cellpadding="0" cellspacing="0" width="100%">
-         <tr>
-          <td class="cellRight" onclick="goToCourseSummary('350','1');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
-           <div style="text-decoration: underline">
-            90.55%
-           </div>
-          </td>
-          <td class="cellRight" onclick="goToCourseSummary('350','1');" style="border:0;" width="30%">
-          </td>
-         </tr>
-        </table>
-       </td>
-       <td class="cellCenter" style="cursor:help;font-weight: bold;" title="1 Assignments Due">
-        <a href="parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=listassignments&amp;studentid=247434&amp;action=form&amp;date=11/07/2022&amp;dateRange=weekof&amp;courseAndSection=350:1" style="color:#0066CC; font-weight: bold;">
-         1
-        </a>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-      </tr>
-      <tr class="listroweven">
-       <td class="cellLeft" nowrap="">
-        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','451:1');" title="Display Assignments for AP CHEMISTRY">
-         <font color="#0000ff">
-          <u>
-           AP CHEMISTRY
-          </u>
-         </font>
-        </span>
-       </td>
-       <td class="cellLeft" nowrap="">
-        Coleman, Michael
-        <br/>
-        <b>
-         Email:
-        </b>
-        <a href="mailto:mcoleman@livingston.org" style="text-decoration:none">
-         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
-        </a>
-       </td>
-       <td class="cellRight" style="cursor:pointer;">
-        <table cellpadding="0" cellspacing="0" width="100%">
-         <tr>
-          <td class="cellRight" onclick="goToCourseSummary('451','1');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
-           <div style="text-decoration: underline">
-            91.20%
-           </div>
-          </td>
-          <td class="cellRight" onclick="goToCourseSummary('451','1');" style="border:0;" width="30%">
-          </td>
-         </tr>
-        </table>
-       </td>
-       <td class="cellCenter" style="cursor:help;font-weight: bold;" title="1 Assignments Due">
-        <a href="parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=listassignments&amp;studentid=247434&amp;action=form&amp;date=11/07/2022&amp;dateRange=weekof&amp;courseAndSection=451:1" style="color:#0066CC; font-weight: bold;">
-         1
-        </a>
-       </td>
-       <td class="cellCenter" style="cursor:help;font-weight: bold;" title="1 Assignments Due">
-        <a href="parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=listassignments&amp;studentid=247434&amp;action=form&amp;date=11/07/2022&amp;dateRange=weekof&amp;courseAndSection=451:1" style="color:#0066CC; font-weight: bold;">
-         1
-        </a>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-      </tr>
-      <tr class="listrowodd">
-       <td class="cellLeft" nowrap="">
-        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','457:5');" title="Display Assignments for AP PHYSICS 1">
-         <font color="#0000ff">
-          <u>
-           AP PHYSICS 1
-          </u>
-         </font>
-        </span>
-       </td>
-       <td class="cellLeft" nowrap="">
-        Deblieck, Megan
-        <br/>
-        <b>
-         Email:
-        </b>
-        <a href="mailto:mdeblieck@livingston.org" style="text-decoration:none">
-         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
-        </a>
-       </td>
-       <td class="cellRight" style="cursor:pointer;">
-        <table cellpadding="0" cellspacing="0" width="100%">
-         <tr>
-          <td class="cellRight" onclick="goToCourseSummary('457','5');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
-           <div style="text-decoration: underline">
-            93.07%
-           </div>
-          </td>
-          <td class="cellRight" onclick="goToCourseSummary('457','5');" style="border:0;" width="30%">
-          </td>
-         </tr>
-        </table>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-      </tr>
-      <tr class="listroweven">
-       <td class="cellLeft" nowrap="">
-        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','542:3');" title="Display Assignments for SPANISH 4 CP">
-         <font color="#0000ff">
-          <u>
-           SPANISH 4 CP
-          </u>
-         </font>
-        </span>
-       </td>
-       <td class="cellLeft" nowrap="">
-        Benavides, Oscar
-        <br/>
-        <b>
-         Email:
-        </b>
-        <a href="mailto:obenavides@livingston.org" style="text-decoration:none">
-         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
-        </a>
-       </td>
-       <td class="cellRight" style="cursor:pointer;">
-        <table cellpadding="0" cellspacing="0" width="100%">
-         <tr>
-          <td class="cellRight" onclick="goToCourseSummary('542','3');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
-           <div style="text-decoration: underline">
-            99.04%
-           </div>
-          </td>
-          <td class="cellRight" onclick="goToCourseSummary('542','3');" style="border:0;" width="30%">
-          </td>
-         </tr>
-        </table>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-      </tr>
-      <tr class="listrowodd">
-       <td class="cellLeft" nowrap="">
-        <span class="categorytab" onclick="showAssignmentsByMPAndCourse('11/07/2022','910:1');" title="Display Assignments for WIND SYMPHONY">
-         <font color="#0000ff">
-          <u>
-           WIND SYMPHONY
-          </u>
-         </font>
-        </span>
-       </td>
-       <td class="cellLeft" nowrap="">
-        Jedwabnik, Michael
-        <br/>
-        <b>
-         Email:
-        </b>
-        <a href="mailto:mjedwabnik@livingston.org" style="text-decoration:none">
-         <img alt="" border="0" src="/livingston/images/labelIcon.png" title="Send e-mail to teacher"/>
-        </a>
-       </td>
-       <td class="cellRight" style="cursor:pointer;">
-        <table cellpadding="0" cellspacing="0" width="100%">
-         <tr>
-          <td class="cellRight" onclick="goToCourseSummary('910','1');" style="border:0;color:#0066CC;" title="View Course Summary" width="70%">
-           <div style="text-decoration: underline">
-            100.00%
-           </div>
-          </td>
-          <td class="cellRight" onclick="goToCourseSummary('910','1');" style="border:0;" width="30%">
-          </td>
-         </tr>
-        </table>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;font-weight: bold;" title="1 Assignments Due">
-        <a href="parents?tab1=studentdata&amp;tab2=gradebook&amp;tab3=listassignments&amp;studentid=247434&amp;action=form&amp;date=11/07/2022&amp;dateRange=weekof&amp;courseAndSection=910:1" style="color:#0066CC; font-weight: bold;">
-         1
-        </a>
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-       <td class="cellCenter" style="cursor:help;opacity:0.5;" title="0 Assignments Due">
-        0
-       </td>
-      </tr>
-     </table>
+          </div>
+          <div style="padding-bottom: 8px;">
+           Students are graded by
+           <b>
+            Category Weighting
+           </b>
+           in this course.  A grade is calculated by taking the average of each category and getting a value for the category based on the weight.  Each category score is then added and a total average is formulated.
+          </div>
+          <table class="list" style="margin:auto;">
+           <tr class="listheading">
+            <td class="cellLeft" nowrap="">
+             Category
+            </td>
+            <td class="cellLeft" nowrap="">
+             Weight
+            </td>
+           </tr>
+           <tr class="listrowodd" height="25px">
+            <td class="cellLeft" nowrap="">
+             <b>
+              Physical Education:
+             </b>
+             Cardio respiratory
+            </td>
+            <td class="cellRight" nowrap="">
+             5.0 %
+            </td>
+           </tr>
+           <tr class="listrowodd" height="25px">
+            <td class="cellLeft" nowrap="">
+             <b>
+              Physical Education:
+             </b>
+             Participation
+            </td>
+            <td class="cellRight" nowrap="">
+             20.0 %
+            </td>
+           </tr>
+           <tr class="listrowodd" height="25px">
+            <td class="cellLeft" nowrap="">
+             <b>
+              Physical Education:
+             </b>
+             Skill Assessments
+            </td>
+            <td class="cellRight" nowrap="">
+             10.0 %
+            </td>
+           </tr>
+           <tr class="listrowodd" height="25px">
+            <td class="cellLeft" nowrap="">
+             <b>
+              Physical Education:
+             </b>
+             Cognitive Knowledge
+            </td>
+            <td class="cellRight" nowrap="">
+             10.0 %
+            </td>
+           </tr>
+           <tr class="listrowodd" height="25px">
+            <td class="cellLeft" nowrap="">
+             <b>
+              Physical Education:
+             </b>
+             Social Responsibilit
+            </td>
+            <td class="cellRight" nowrap="">
+             5.0 %
+            </td>
+           </tr>
+           <tr class="listroweven" height="25px">
+            <td class="cellLeft" nowrap="">
+             <b>
+              Health/Driver's Ed.
+             </b>
+            </td>
+            <td class="cellRight" nowrap="">
+             50.0 %
+            </td>
+           </tr>
+          </table>
+         </div>
+        </td>
+       </tr>
+       <tr>
+        <td colspan="15">
+         <div style="padding-top: 30px;text-align: center;font-size: 14pt;">
+          <b>
+           Class Attendance Summary
+          </b>
+          <span style="font-size: 11pt;">
+           Year to Date
+          </span>
+         </div>
+         <table class="list" style="margin: auto;">
+          <tr class="listheading">
+           <td class="cellLeft">
+            Type
+           </td>
+           <td class="cellRight">
+            Total
+           </td>
+           <td class="cellRight">
+            Unexcused
+           </td>
+           <td class="cellRight">
+            Excused
+           </td>
+          </tr>
+          <tr class="listroweven">
+           <td class="cellLeft">
+            <b>
+             Absences
+            </b>
+           </td>
+           <td class="cellRight">
+            0.0
+           </td>
+           <td class="cellRight">
+            0.0
+           </td>
+           <td class="cellRight">
+            0.0
+           </td>
+          </tr>
+          <tr class="listrowodd">
+           <td class="cellLeft">
+            <b>
+             Tardies
+            </b>
+           </td>
+           <td class="cellRight">
+            0.0
+           </td>
+           <td class="cellRight">
+            0.0
+           </td>
+           <td class="cellRight">
+            0.0
+           </td>
+          </tr>
+         </table>
+        </td>
+       </tr>
+      </table>
+     </div>
     </td>
    </tr>
   </table>
@@ -1070,12 +971,16 @@
    </tr>
   </table>
   <div style="display:none">
+   <div id="dialog-auto-tooltip1" style="background-color:#FFFFF1" title="">
+    Percentage is rounded to Hundredths Place
+   </div>
+  </div>
+  <div style="display:none">
    <div id="_dialog-confirm_" style="background-color:#FFFFF1" title="">
     <table>
      <tr>
       <td>
-       <img src="/livingston/images/help2_48.png">
-       </img>
+       <img src="/livingston/images/help2_48.png"/>
       </td>
       <td>
        <div id="_confirmDialogText_">
@@ -1088,8 +993,7 @@
     <table>
      <tr>
       <td>
-       <img src="/livingston/images/help2_48.png">
-       </img>
+       <img src="/livingston/images/help2_48.png"/>
       </td>
       <td>
        <div id="_confirmPromptText_">
@@ -1104,8 +1008,7 @@
     <table>
      <tr>
       <td>
-       <img src="/livingston/images/info_48.png">
-       </img>
+       <img src="/livingston/images/info_48.png"/>
       </td>
       <td>
        <div id="_confirmAlertText_">
